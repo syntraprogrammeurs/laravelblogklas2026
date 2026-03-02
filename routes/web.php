@@ -11,12 +11,13 @@ Route::get('/contact', fn () => view('frontend.contact'))->name('frontend.contac
 //backend routes
 Route::get('/backend', function () {
     return view('backend.dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified'])->name('backend.dashboard');
 
 
 
 Route::middleware(['auth'])->group(function(){
     Route::resource('/backend/users', UserController::class);
+    Route::get('/backend/contact', fn () => view('backend.contact'))->name('backend.contact');
 });
 
 
