@@ -11,8 +11,6 @@
 
     @vite(['resources/css/styles.css', 'resources/js/app.js'])
 
-    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-
     {{-- Named slot: extra <head> tags per pagina (optioneel) --}}
     {{ $head ?? '' }}
 </head>
@@ -36,8 +34,6 @@
 </div>
 
 {{-- Externe libs die de demo scripts verwachten --}}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
 
 {{-- Named slot: extra scripts per pagina (optioneel) --}}
 {{ $scripts ?? '' }}

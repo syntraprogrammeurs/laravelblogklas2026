@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -13,7 +14,13 @@ class UserController extends Controller
     public function index()
     {
         //
-        return view('backend.users.index');
+
+        $users = User::query()
+            ->with('role')
+            ->latest()
+            ->paginate(10);
+
+        return view('backend.users.index', compact('users'));
     }
 
     /**

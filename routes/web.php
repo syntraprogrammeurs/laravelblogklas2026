@@ -16,11 +16,16 @@ Route::get('/backend', function () {
 
 
 Route::middleware(['auth'])->group(function(){
-    Route::resource('/backend/users', UserController::class);
+
     Route::get('/backend/contact', fn () => view('backend.contact'))->name('backend.contact');
 });
 
+//Route::get('/backend/users', function(){
+//    return view('backend.users.index');
+//})->middleware(['auth', 'verified'])->name('backend.users.index');
 
-
+Route::get('/backend/users',[UserController::class, 'index'])
+    ->middleware(['auth','verified'])
+    ->name('backend.users.index');
 
 require __DIR__.'/settings.php';
