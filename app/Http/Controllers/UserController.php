@@ -2,73 +2,35 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserIndexRequest;
+use App\Models\Role;
 use App\Models\User;
-use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-
-    public function index()
+    public function index(UserIndexRequest $request)
     {
-        //
+        $filters = $request->defaults();
 
         $users = User::query()
             ->with('role')
-            ->latest()
-            ->paginate(10);
+            ->search($filters['q'])
+            ->roleFilter($filters['role'])
+            ->statusFilter($filters['status'])
+            ->verifiedFilter($filters['verified'])
+            ->sortBySafe($filters['sort'], $filters['dir'])
+            ->paginate($filters['per_page'])
+            ->withQueryString();
 
-        return view('backend.users.index', compact('users'));
-    }
+        $roles = Role::query()
+            ->orderBy('name')
+            ->get(['id', 'name']);
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-        return view('backend.users.create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return view('backend.users.index', [
+            'users' => $users,
+            'roles' => $roles,
+            'filters' => $filters,
+            'perPageAllowed' => [10, 25, 50, 100],
+        ]);
     }
 }
