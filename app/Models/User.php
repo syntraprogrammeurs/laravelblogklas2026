@@ -29,7 +29,7 @@ class User extends Authenticatable
         'password',
         'role_id', // wordt gemaakt door de foreignIdFor in de migration
         'is_active',
-        'photo_id',
+        'email_verified_at',
     ];
 
     /**
@@ -54,6 +54,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active'=> 'boolean',
         ];
     }
 

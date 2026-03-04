@@ -26,8 +26,26 @@
 
     <div id="layoutSidenav_content">
         <main>
-            {{ $slot }}
+            {{--
+                SB Admin layout: container-fluid + padding.
+                Hierdoor lijnt alles (alerts, cards, tables) netjes uit.
+            --}}
+            <div class="container-fluid px-4 pt-4">
+
+                {{--
+                    Flash component staat hier 1 keer:
+                    - validatiefouten ($errors)
+                    - session messages (success/error/warning/info)
+                    Elke backend pagina profiteert hiervan.
+                --}}
+                <x-backend.flash />
+
+                {{-- Hier renderen we de content van de pagina (slot) --}}
+                {{ $slot }}
+
+            </div>
         </main>
+
 
         <x-backend.footer />
     </div>

@@ -1,5 +1,5 @@
 // Bootstrap setup (Laravel default)
-//import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
 // // Alpine
 // import Alpine from 'alpinejs'
