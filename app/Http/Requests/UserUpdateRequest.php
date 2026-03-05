@@ -81,4 +81,43 @@ class UserUpdateRequest extends FormRequest
             'password_confirmation' => ['required_with:password', 'same:password'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            // Name
+            'name.required' => 'De naam is een verplicht veld.',
+            'name.string'   => 'De naam moet tekst zijn.',
+            'name.min'      => 'De naam moet minimaal :min tekens bevatten.',
+            'name.max'      => 'De naam mag maximaal :max tekens bevatten.',
+
+            // Email
+            'email.required' => 'Het e-mailadres is verplicht.',
+            'email.email'    => 'Voer een geldig e-mailadres in.',
+            'email.max'      => 'Het e-mailadres mag maximaal :max tekens bevatten.',
+            'email.unique'   => 'Dit e-mailadres is al in gebruik.',
+
+            // Role
+            'role_id.required' => 'Selecteer een rol voor deze gebruiker.',
+            'role_id.integer'  => 'De geselecteerde rol is ongeldig.',
+            'role_id.exists'   => 'De geselecteerde rol bestaat niet in ons systeem.',
+
+            // Is Active & Verified
+            'is_active.required' => 'Geef aan of de gebruiker actief is.',
+            'is_active.boolean'  => 'De waarde voor actief is ongeldig.',
+            'verified.boolean'   => 'De waarde voor geverifieerd is ongeldig.',
+
+            // Email Verified At
+            'email_verified_at.date' => 'De verificatiedatum moet een geldige datum zijn.',
+
+            // Password
+            'password.string' => 'Het wachtwoord moet uit tekst bestaan.',
+            'password.min'    => 'Het wachtwoord moet minimaal :min tekens lang zijn.',
+            'password.max'    => 'Het wachtwoord mag maximaal :max tekens bevatten.',
+
+            // Password Confirmation
+            'password_confirmation.required_with' => 'Bevestig het nieuwe wachtwoord.',
+            'password_confirmation.same'          => 'De wachtwoorden komen niet overeen.',
+        ];
+    }
 }

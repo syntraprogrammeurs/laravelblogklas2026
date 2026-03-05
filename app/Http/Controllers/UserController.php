@@ -185,6 +185,24 @@ class UserController extends Controller
         }
     }
 
+    public function show(User $user)
+    {
+
+        /**
+         * Show is vaak nuttig in admin panels om read-only info te tonen:
+         * - id, created_at, updated_at
+         * - status, role, verified
+         *
+         * We eager load role om N+1 te vermijden als view role gebruikt.
+         */
+        $user->load('role');
+
+        return view('backend.users.show', [
+            'user' => $user,
+        ]);
+
+
+    }
 
 
 }
