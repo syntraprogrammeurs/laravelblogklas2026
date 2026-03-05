@@ -141,9 +141,11 @@
                             <td>{{ optional($user->created_at)->format('Y-m-d') }}</td>
 
                             <td class="text-end">
-                                <a href="#" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                <a href="{{ route('backend.users.show', $user) }}" class="btn btn-sm btn-outline-primary">Show</a>
+                                <a href="{{ route('backend.users.edit', $user) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
                                 <a href="#" class="btn btn-sm btn-outline-danger">Delete</a>
                             </td>
+
                         </tr>
                     @empty
                         <tr>
