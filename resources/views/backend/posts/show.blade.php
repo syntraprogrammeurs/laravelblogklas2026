@@ -21,17 +21,19 @@
                     {{ $post->title }}
                 </div>
 
-                <div class="d-flex gap-2">
-                    @if(! $post->deleted_at)
-                        <a href="{{ route('backend.posts.edit', $post) }}" class="btn btn-sm btn-outline-secondary">
-                            Edit
-                        </a>
-                    @endif
+                    <div class="d-flex gap-2">
+                        @if(! $post->deleted_at)
+                            @can('update', $post)
+                                <a href="{{ route('backend.posts.edit', $post) }}" class="btn btn-sm btn-outline-secondary">
+                                    Edit
+                                </a>
+                            @endcan
+                        @endif
 
-                    <a href="{{ route('backend.posts.index') }}" class="btn btn-sm btn-outline-secondary">
-                        Back
-                    </a>
-                </div>
+                        <a href="{{ route('backend.posts.index') }}" class="btn btn-sm btn-outline-secondary">
+                            Back
+                        </a>
+                    </div>
             </div>
 
             <div class="card-body">

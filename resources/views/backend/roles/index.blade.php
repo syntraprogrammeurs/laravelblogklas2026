@@ -48,10 +48,12 @@
                         Clear
                     </a>
 
-                    <a href="{{ route('backend.roles.create') }}" class="btn btn-success ms-auto">
-                        <i class="fas fa-plus me-1"></i>
-                        New role
-                    </a>
+                    @can('create', \App\Models\Role::class)
+                        <a href="{{ route('backend.roles.create') }}" class="btn btn-success ms-auto">
+                            <i class="fas fa-plus me-1"></i>
+                            New role
+                        </a>
+                    @endcan
                 </div>
             </div>
         </form>
@@ -112,44 +114,54 @@
 
                             <td class="text-end">
                                 <div class="d-inline-flex gap-1">
-                                    <a href="{{ route('backend.roles.show', $role) }}" class="btn btn-sm btn-outline-primary">
-                                        Show
-                                    </a>
+                                    @can('view', $role)
+                                        <a href="{{ route('backend.roles.show', $role) }}" class="btn btn-sm btn-outline-primary">
+                                            Show
+                                        </a>
+                                    @endcan
 
                                     @if(! $role->deleted_at)
-                                        <a href="{{ route('backend.roles.edit', $role) }}" class="btn btn-sm btn-outline-secondary">
-                                            Edit
-                                        </a>
+                                        @can('update', $role)
+                                            <a href="{{ route('backend.roles.edit', $role) }}" class="btn btn-sm btn-outline-secondary">
+                                                Edit
+                                            </a>
+                                        @endcan
 
-                                        <form method="POST" action="{{ route('backend.roles.destroy', $role) }}" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
+                                        @can('delete', $role)
+                                            <form method="POST" action="{{ route('backend.roles.destroy', $role) }}" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
 
-                                            <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                    onclick="return confirm('Are you sure you want to delete this role?')">
-                                                Delete
-                                            </button>
-                                        </form>
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                        onclick="return confirm('Are you sure you want to delete this role?')">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        @endcan
                                     @else
-                                        <form method="POST" action="{{ route('backend.roles.restore', $role->id) }}" class="d-inline">
-                                            @csrf
-                                            @method('PATCH')
+                                        @can('restore', $role)
+                                            <form method="POST" action="{{ route('backend.roles.restore', $role->id) }}" class="d-inline">
+                                                @csrf
+                                                @method('PATCH')
 
-                                            <button type="submit" class="btn btn-sm btn-success"
-                                                    onclick="return confirm('Restore this role?')">
-                                                Restore
-                                            </button>
-                                        </form>
+                                                <button type="submit" class="btn btn-sm btn-success"
+                                                        onclick="return confirm('Restore this role?')">
+                                                    Restore
+                                                </button>
+                                            </form>
+                                        @endcan
 
-                                        <form method="POST" action="{{ route('backend.roles.forceDelete', $role->id) }}" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
+                                        @can('forceDelete', $role)
+                                            <form method="POST" action="{{ route('backend.roles.forceDelete', $role->id) }}" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
 
-                                            <button type="submit" class="btn btn-sm btn-danger"
-                                                    onclick="return confirm('Permanently delete this role? This cannot be undone.')">
-                                                Force delete
-                                            </button>
-                                        </form>
+                                                <button type="submit" class="btn btn-sm btn-danger"
+                                                        onclick="return confirm('Permanently delete this role? This cannot be undone.')">
+                                                    Force delete
+                                                </button>
+                                            </form>
+                                        @endcan
                                     @endif
                                 </div>
                             </td>

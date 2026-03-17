@@ -11,9 +11,11 @@
 
                 <div class="d-flex gap-2">
                     @if(! $media->deleted_at)
-                        <a href="{{ route('backend.media.edit', $media) }}" class="btn btn-sm btn-outline-secondary">
-                            Edit
-                        </a>
+                        @can('update', $media)
+                            <a href="{{ route('backend.media.edit', $media) }}" class="btn btn-sm btn-outline-secondary">
+                                Edit
+                            </a>
+                        @endcan
                     @endif
 
                     <a href="{{ route('backend.media.index') }}" class="btn btn-sm btn-outline-secondary">

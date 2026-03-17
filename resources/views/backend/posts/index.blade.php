@@ -82,10 +82,12 @@
                         Clear
                     </a>
 
-                    <a href="{{ route('backend.posts.create') }}" class="btn btn-success ms-auto">
-                        <i class="fas fa-plus me-1"></i>
-                        New post
-                    </a>
+                    @can('create', \App\Models\Post::class)
+                        <a href="{{ route('backend.posts.create') }}" class="btn btn-success ms-auto">
+                            <i class="fas fa-plus me-1"></i>
+                            New post
+                        </a>
+                    @endcan
                 </div>
             </div>
         </form>
@@ -184,44 +186,54 @@
 
                             <td class="text-end">
                                 <div class="d-inline-flex gap-1">
-                                    <a href="{{ route('backend.posts.show', $post) }}" class="btn btn-sm btn-outline-primary">
-                                        Show
-                                    </a>
+                                    @can('view', $post)
+                                        <a href="{{ route('backend.posts.show', $post) }}" class="btn btn-sm btn-outline-primary">
+                                            Show
+                                        </a>
+                                    @endcan
 
                                     @if(! $post->deleted_at)
-                                        <a href="{{ route('backend.posts.edit', $post) }}" class="btn btn-sm btn-outline-secondary">
-                                            Edit
-                                        </a>
+                                        @can('update', $post)
+                                            <a href="{{ route('backend.posts.edit', $post) }}" class="btn btn-sm btn-outline-secondary">
+                                                Edit
+                                            </a>
+                                        @endcan
 
-                                        <form method="POST" action="{{ route('backend.posts.destroy', $post) }}" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
+                                        @can('delete', $post)
+                                            <form method="POST" action="{{ route('backend.posts.destroy', $post) }}" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
 
-                                            <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                    onclick="return confirm('Are you sure you want to delete this post?')">
-                                                Delete
-                                            </button>
-                                        </form>
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                        onclick="return confirm('Are you sure you want to delete this post?')">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        @endcan
                                     @else
-                                        <form method="POST" action="{{ route('backend.posts.restore', $post->id) }}" class="d-inline">
-                                            @csrf
-                                            @method('PATCH')
+                                        @can('restore', $post)
+                                            <form method="POST" action="{{ route('backend.posts.restore', $post->id) }}" class="d-inline">
+                                                @csrf
+                                                @method('PATCH')
 
-                                            <button type="submit" class="btn btn-sm btn-success"
-                                                    onclick="return confirm('Restore this post?')">
-                                                Restore
-                                            </button>
-                                        </form>
+                                                <button type="submit" class="btn btn-sm btn-success"
+                                                        onclick="return confirm('Restore this post?')">
+                                                    Restore
+                                                </button>
+                                            </form>
+                                        @endcan
 
-                                        <form method="POST" action="{{ route('backend.posts.forceDelete', $post->id) }}" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
+                                        @can('forceDelete', $post)
+                                            <form method="POST" action="{{ route('backend.posts.forceDelete', $post->id) }}" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
 
-                                            <button type="submit" class="btn btn-sm btn-danger"
-                                                    onclick="return confirm('Permanently delete this post? This cannot be undone.')">
-                                                Force delete
-                                            </button>
-                                        </form>
+                                                <button type="submit" class="btn btn-sm btn-danger"
+                                                        onclick="return confirm('Permanently delete this post? This cannot be undone.')">
+                                                    Force delete
+                                                </button>
+                                            </form>
+                                        @endcan
                                     @endif
                                 </div>
                             </td>

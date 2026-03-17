@@ -48,10 +48,12 @@
                         Clear
                     </a>
 
-                    <a href="{{ route('backend.categories.create') }}" class="btn btn-success ms-auto">
-                        <i class="fas fa-plus me-1"></i>
-                        New category
-                    </a>
+                    @can('create', \App\Models\Category::class)
+                        <a href="{{ route('backend.categories.create') }}" class="btn btn-success ms-auto">
+                            <i class="fas fa-plus me-1"></i>
+                            New category
+                        </a>
+                    @endcan
                 </div>
             </div>
         </form>

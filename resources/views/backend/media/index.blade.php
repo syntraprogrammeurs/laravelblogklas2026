@@ -67,10 +67,12 @@
                         Clear
                     </a>
 
-                    <a href="{{ route('backend.media.create') }}" class="btn btn-success ms-auto">
-                        <i class="fas fa-plus me-1"></i>
-                        New media
-                    </a>
+                    @can('create', \App\Models\Media::class)
+                        <a href="{{ route('backend.media.create') }}" class="btn btn-success ms-auto">
+                            <i class="fas fa-plus me-1"></i>
+                            New media
+                        </a>
+                    @endcan
                 </div>
             </div>
         </form>
@@ -168,44 +170,54 @@
 
                             <td class="text-end">
                                 <div class="d-inline-flex gap-1">
-                                    <a href="{{ route('backend.media.show', $item) }}" class="btn btn-sm btn-outline-primary">
-                                        Show
-                                    </a>
+                                    @can('view', $item)
+                                        <a href="{{ route('backend.media.show', $item) }}" class="btn btn-sm btn-outline-primary">
+                                            Show
+                                        </a>
+                                    @endcan
 
                                     @if(! $item->deleted_at)
-                                        <a href="{{ route('backend.media.edit', $item) }}" class="btn btn-sm btn-outline-secondary">
-                                            Edit
-                                        </a>
+                                        @can('update', $item)
+                                            <a href="{{ route('backend.media.edit', $item) }}" class="btn btn-sm btn-outline-secondary">
+                                                Edit
+                                            </a>
+                                        @endcan
 
-                                        <form method="POST" action="{{ route('backend.media.destroy', $item) }}" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
+                                        @can('delete', $item)
+                                            <form method="POST" action="{{ route('backend.media.destroy', $item) }}" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
 
-                                            <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                    onclick="return confirm('Are you sure you want to delete this media item?')">
-                                                Delete
-                                            </button>
-                                        </form>
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                        onclick="return confirm('Are you sure you want to delete this media item?')">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        @endcan
                                     @else
-                                        <form method="POST" action="{{ route('backend.media.restore', $item->id) }}" class="d-inline">
-                                            @csrf
-                                            @method('PATCH')
+                                        @can('restore', $item)
+                                            <form method="POST" action="{{ route('backend.media.restore', $item->id) }}" class="d-inline">
+                                                @csrf
+                                                @method('PATCH')
 
-                                            <button type="submit" class="btn btn-sm btn-success"
-                                                    onclick="return confirm('Restore this media item?')">
-                                                Restore
-                                            </button>
-                                        </form>
+                                                <button type="submit" class="btn btn-sm btn-success"
+                                                        onclick="return confirm('Restore this media item?')">
+                                                    Restore
+                                                </button>
+                                            </form>
+                                        @endcan
 
-                                        <form method="POST" action="{{ route('backend.media.forceDelete', $item->id) }}" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
+                                        @can('forceDelete', $item)
+                                            <form method="POST" action="{{ route('backend.media.forceDelete', $item->id) }}" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
 
-                                            <button type="submit" class="btn btn-sm btn-danger"
-                                                    onclick="return confirm('Permanently delete this media item? This cannot be undone.')">
-                                                Force delete
-                                            </button>
-                                        </form>
+                                                <button type="submit" class="btn btn-sm btn-danger"
+                                                        onclick="return confirm('Permanently delete this media item? This cannot be undone.')">
+                                                    Force delete
+                                                </button>
+                                            </form>
+                                        @endcan
                                     @endif
                                 </div>
                             </td>

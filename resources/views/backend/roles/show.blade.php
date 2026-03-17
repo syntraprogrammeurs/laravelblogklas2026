@@ -11,9 +11,11 @@
 
                 <div class="d-flex gap-2">
                     @if(! $role->deleted_at)
-                        <a href="{{ route('backend.roles.edit', $role) }}" class="btn btn-sm btn-outline-secondary">
-                            Edit
-                        </a>
+                        @can('update', $role)
+                            <a href="{{ route('backend.roles.edit', $role) }}" class="btn btn-sm btn-outline-secondary">
+                                Edit
+                            </a>
+                        @endcan
                     @endif
 
                     <a href="{{ route('backend.roles.index') }}" class="btn btn-sm btn-outline-secondary">
