@@ -1,12 +1,12 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Concerns\RecordUserActivity;
 use App\Services\MediaService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
@@ -14,8 +14,7 @@ use Illuminate\Support\Str;
 class Post extends Model
 {
     use SoftDeletes;
-
-
+    use RecordUserActivity;
 
     /**
      * Velden die via mass assignment ingevuld mogen worden.
@@ -28,6 +27,8 @@ class Post extends Model
         'body',
         'is_published',
         'published_at',
+        'created_by',
+        'updated_by',
     ];
 
     /**
@@ -67,6 +68,7 @@ class Post extends Model
     {
         return $this->belongsToMany(Category::class)->withTimestamps();
     }
+
     public function media(): MorphOne
     {
         return $this->morphOne(Media::class, 'mediable');
@@ -92,16 +94,12 @@ class Post extends Model
                 $post->slug = Str::slug($post->title);
             }
         });
+
         static::forceDeleted(function ($post) {
-
             if ($post->media) {
-
                 $mediaService = app(MediaService::class);
-
                 $mediaService->delete($post->media);
-
             }
-
         });
     }
 
@@ -197,6 +195,13 @@ class Post extends Model
 
         return $query->orderBy($sort, $dir);
     }
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 
-
+    public function editor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
 }

@@ -5,15 +5,11 @@
         <x-backend.card>
             <div class="card-header d-flex align-items-center justify-content-between">
                 @if($post->media)
-
                     <div class="mb-3">
-
                         <img
                             src="{{ $post->media->url() }}"
                             class="img-fluid rounded">
-
                     </div>
-
                 @endif
 
                 <div>
@@ -21,19 +17,19 @@
                     {{ $post->title }}
                 </div>
 
-                    <div class="d-flex gap-2">
-                        @if(! $post->deleted_at)
-                            @can('update', $post)
-                                <a href="{{ route('backend.posts.edit', $post) }}" class="btn btn-sm btn-outline-secondary">
-                                    Edit
-                                </a>
-                            @endcan
-                        @endif
+                <div class="d-flex gap-2">
+                    @if(! $post->deleted_at)
+                        @can('update', $post)
+                            <a href="{{ route('backend.posts.edit', $post) }}" class="btn btn-sm btn-outline-secondary">
+                                Edit
+                            </a>
+                        @endcan
+                    @endif
 
-                        <a href="{{ route('backend.posts.index') }}" class="btn btn-sm btn-outline-secondary">
-                            Back
-                        </a>
-                    </div>
+                    <a href="{{ route('backend.posts.index') }}" class="btn btn-sm btn-outline-secondary">
+                        Back
+                    </a>
+                </div>
             </div>
 
             <div class="card-body">
@@ -54,6 +50,14 @@
                     <tr>
                         <th>Author</th>
                         <td>{{ $post->user?->name ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Created by</th>
+                        <td>{{ $post->creator?->name ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Last updated by</th>
+                        <td>{{ $post->editor?->name ?? '-' }}</td>
                     </tr>
                     <tr>
                         <th>Status</th>
