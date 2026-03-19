@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Concerns\RecordUserActivity;
 use App\Services\MediaService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
@@ -14,14 +17,15 @@ use Illuminate\Support\Str;
 class Post extends Model
 {
     use SoftDeletes;
-
-
+    use RecordUserActivity;
 
     /**
      * Velden die via mass assignment ingevuld mogen worden.
      */
     protected $fillable = [
         'user_id',
+        'created_by',
+        'updated_by',
         'title',
         'slug',
         'excerpt',
@@ -55,18 +59,35 @@ class Post extends Model
     /**
      * Relatie: één post hoort bij één auteur.
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
     /**
+     * Relatie: gebruiker die de post technisch heeft aangemaakt.
+     */
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Relatie: gebruiker die de post laatst aangepast heeft.
+     */
+    public function editor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    /**
      * Relatie: één post kan meerdere categories hebben.
      */
-    public function categories()
+    public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class)->withTimestamps();
     }
+
     public function media(): MorphOne
     {
         return $this->morphOne(Media::class, 'mediable');
@@ -81,27 +102,23 @@ class Post extends Model
      */
     protected static function booted(): void
     {
-        static::creating(function (Post $post) {
+        static::creating(function (Post $post): void {
             if (blank($post->slug) && filled($post->title)) {
                 $post->slug = Str::slug($post->title);
             }
         });
 
-        static::updating(function (Post $post) {
+        static::updating(function (Post $post): void {
             if ($post->isDirty('title') && blank($post->slug)) {
                 $post->slug = Str::slug($post->title);
             }
         });
-        static::forceDeleted(function ($post) {
 
+        static::forceDeleted(function (Post $post): void {
             if ($post->media) {
-
                 $mediaService = app(MediaService::class);
-
                 $mediaService->delete($post->media);
-
             }
-
         });
     }
 
@@ -197,6 +214,4 @@ class Post extends Model
 
         return $query->orderBy($sort, $dir);
     }
-
-
 }
