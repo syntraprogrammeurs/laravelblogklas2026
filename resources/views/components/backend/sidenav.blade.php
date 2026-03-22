@@ -25,7 +25,7 @@
                 </a>
             @endcan
 
-            @can('viewAny', \App\Models\Category::class)
+            @can('viewAny', \App\Models\Post::class)
                 <a class="nav-link {{ request()->routeIs('backend.categories.*') ? 'active' : '' }}"
                    href="{{ route('backend.categories.index') }}">
                     <div class="sb-nav-link-icon">

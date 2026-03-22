@@ -8,17 +8,16 @@ use App\Http\Requests\UpdatePostRequest;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\User;
-use App\Services\MediaService;
-use Illuminate\Support\Facades\DB;
+use App\Services\PostService;
 use Throwable;
 
 class PostController extends Controller
 {
-    protected MediaService $mediaService;
+    protected PostService $postService;
 
-    public function __construct(MediaService $mediaService)
+    public function __construct(PostService $postService)
     {
-        $this->mediaService = $mediaService;
+        $this->postService = $postService;
     }
 
     /**
@@ -96,43 +95,11 @@ class PostController extends Controller
     {
         $this->authorize('create', Post::class);
 
-        $data = $request->validated();
+        $post = $this->postService->create($request->validated());
 
-        try {
-            DB::beginTransaction();
-
-            $post = Post::create([
-                'user_id' => $data['user_id'] ?? null,
-                'title' => $data['title'],
-                'slug' => $data['slug'],
-                'excerpt' => $data['excerpt'] ?? null,
-                'body' => $data['body'],
-                'is_published' => $data['is_published'],
-                'published_at' => $data['published_at'] ?? null,
-            ]);
-
-            $post->categories()->sync($data['categories'] ?? []);
-
-            if ($request->hasFile('image')) {
-                $this->mediaService->upload(
-                    $post,
-                    $request->file('image'),
-                    'posts'
-                );
-            }
-
-            DB::commit();
-
-            return redirect()
-                ->route('backend.posts.index')
-                ->with('success', "Post '{$post->title}' created successfully.");
-        } catch (Throwable $e) {
-            DB::rollBack();
-
-            return back()
-                ->withInput()
-                ->with('error', 'Post could not be created. Please try again.');
-        }
+        return redirect()
+            ->route('backend.posts.index')
+            ->with('success', "Post '{$post->title}' created successfully.");
     }
 
     /**
@@ -184,43 +151,11 @@ class PostController extends Controller
     {
         $this->authorize('update', $post);
 
-        $data = $request->validated();
+        $post = $this->postService->update($post, $request->validated());
 
-        try {
-            DB::beginTransaction();
-
-            $post->update([
-                'user_id' => $data['user_id'] ?? null,
-                'title' => $data['title'],
-                'slug' => $data['slug'],
-                'excerpt' => $data['excerpt'] ?? null,
-                'body' => $data['body'],
-                'is_published' => $data['is_published'],
-                'published_at' => $data['published_at'] ?? null,
-            ]);
-
-            $post->categories()->sync($data['categories'] ?? []);
-
-            if ($request->hasFile('image')) {
-                $this->mediaService->replace(
-                    $post,
-                    $request->file('image'),
-                    'posts'
-                );
-            }
-
-            DB::commit();
-
-            return redirect()
-                ->route('backend.posts.edit', $post)
-                ->with('success', "Post '{$post->title}' updated successfully.");
-        } catch (Throwable $e) {
-            DB::rollBack();
-
-            return back()
-                ->withInput()
-                ->with('error', 'Post could not be updated. Please try again.');
-        }
+        return redirect()
+            ->route('backend.posts.edit', $post)
+            ->with('success', "Post '{$post->title}' updated successfully.");
     }
 
     /**
