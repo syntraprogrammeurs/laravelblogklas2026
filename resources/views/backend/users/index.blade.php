@@ -1,246 +1,114 @@
-<x-backend.shell title="Users - SB Admin">
+<x-backend.shell title="Users">
 
-    <x-slot:head>
-        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-    </x-slot:head>
+    <x-slot:actions>
+        @can('create', \App\Models\User::class)
+            <flux:button icon="plus" variant="primary" :href="route('backend.users.create')" class="!rounded-xl !bg-blue-600">New User</flux:button>
+        @endcan
+    </x-slot:actions>
 
-    <x-backend.page-header title="Users">
-
-        {{-- Filterbalk (GET => alles blijft in de URL) --}}
-        <form method="GET" action="{{ route('backend.users.index') }}" class="mb-4">
-            <div class="row g-2 align-items-end">
-
-                <div class="col-12 col-md-4">
-                    <label class="form-label mb-1">Search</label>
-                    <input
-                        type="text"
-                        name="q"
-                        value="{{ $filters['q'] }}"
-                        class="form-control"
-                        placeholder="Search name or email..."
-                    >
+    <x-backend.card>
+        <form method="GET" action="{{ route('backend.users.index') }}" class="mb-10">
+            <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-6 items-end">
+                <div class="md:col-span-2">
+                    <flux:field>
+                        <flux:label>Search</flux:label>
+                        <flux:input name="q" value="{{ $filters['q'] }}" placeholder="Search name or email..." clearable />
+                    </flux:field>
                 </div>
 
-                <div class="col-12 col-md-2">
-                    <label class="form-label mb-1">Role</label>
-                    <select name="role" class="form-select">
-                        <option value="">All roles</option>
-                        @foreach($roles as $r)
-                            <option value="{{ $r->id }}" @selected((string)$filters['role'] === (string)$r->id)>
-                                {{ $r->name }}
-                            </option>
-                        @endforeach
-                    </select>
+                <div>
+                    <flux:field>
+                        <flux:label>Role</flux:label>
+                        <flux:select name="role">
+                            <flux:select.option value="">All roles</flux:select.option>
+                            @foreach($roles as $role)
+                                <flux:select.option value="{{ $role->id }}" @selected((string) $filters['role'] === (string) $role->id)>
+                                    {{ $role->name }}
+                                </flux:select.option>
+                            @endforeach
+                        </flux:select>
+                    </flux:field>
                 </div>
 
-                <div class="col-12 col-md-2">
-                    <label class="form-label mb-1">Status</label>
-                    <select name="status" class="form-select">
-                        <option value="">All</option>
-                        <option value="active" @selected($filters['status'] === 'active')>Active</option>
-                        <option value="inactive" @selected($filters['status'] === 'inactive')>Inactive</option>
-                    </select>
-                </div>
-
-                <div class="col-12 col-md-2">
-                    <label class="form-label mb-1">Verified</label>
-                    <select name="verified" class="form-select">
-                        <option value="">All</option>
-                        <option value="yes" @selected($filters['verified'] === 'yes')>Yes</option>
-                        <option value="no" @selected($filters['verified'] === 'no')>No</option>
-                    </select>
-                </div>
-
-                <div class="col-12 col-md-2">
-                    <label class="form-label mb-1">Per page</label>
-                    <select name="per_page" class="form-select">
-                        @foreach($perPageAllowed as $n)
-                            <option value="{{ $n }}" @selected((int)$filters['per_page'] === (int)$n)>{{ $n }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-12 col-md-2">
-                    <label class="form-label mb-1">Deleted</label>
-                    <select name="trashed" class="form-select">
-                        <option value="">Active only</option>
-                        <option value="with" @selected($filters['trashed'] === 'with')>Active + deleted</option>
-                        <option value="only" @selected($filters['trashed'] === 'only')>Deleted only</option>
-                    </select>
-                </div>
-                {{-- Sort state bewaren wanneer je filters submit --}}
-                <input type="hidden" name="sort" value="{{ $filters['sort'] }}">
-                <input type="hidden" name="dir" value="{{ $filters['dir'] }}">
-
-                <div class="col-12 d-flex gap-2 mt-2">
-                    <button class="btn btn-primary" type="submit">Apply</button>
-
-                    <a class="btn btn-outline-secondary" href="{{ route('backend.users.index') }}">
-                        Clear
-                    </a>
-
-                    @can('create', \App\Models\User::class)
-                        <a href="{{ route('backend.users.create') }}" class="btn btn-success ms-auto">
-                            <i class="fas fa-plus me-1"></i>
-                            New user
-                        </a>
-                    @endcan
+                <div class="flex gap-3">
+                    <flux:button type="submit" variant="filled" class="flex-1 !rounded-xl !bg-white/10 !border-white/10">Apply</flux:button>
+                    <flux:button :href="route('backend.users.index')" variant="ghost" icon="x-mark" class="!rounded-xl" />
                 </div>
             </div>
         </form>
 
-        {{-- Sort helpers --}}
-        @php
-            $sortUrl = function (string $col) use ($filters) {
-                $newDir = ($filters['sort'] === $col && $filters['dir'] === 'asc') ? 'desc' : 'asc';
-
-                return route('backend.users.index', [
-                    'q' => $filters['q'],
-                    'role' => $filters['role'],
-                    'status' => $filters['status'],
-                    'verified' => $filters['verified'],
-                    'per_page' => $filters['per_page'],
-                    'sort' => $col,
-                    'dir' => $newDir,
-                ]);
-            };
-
-            $sortIcon = function (string $col) use ($filters) {
-                if ($filters['sort'] !== $col) return '';
-                return $filters['dir'] === 'asc' ? ' ▲' : ' ▼';
-            };
-        @endphp
-
-        <x-backend.card>
-            <div class="card-header">
-                <i class="fas fa-table me-1"></i>
-                Users lijst
-                <span class="text-muted ms-2">({{ $users->total() }} totaal)</span>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped mb-0">
-                    <thead>
-                    <tr>
-                        <th>Image</th>
-                        <th><a class="text-decoration-none" href="{{ $sortUrl('id') }}">ID{!! $sortIcon('id') !!}</a></th>
-                        <th><a class="text-decoration-none" href="{{ $sortUrl('name') }}">Name{!! $sortIcon('name') !!}</a></th>
-                        <th><a class="text-decoration-none" href="{{ $sortUrl('email') }}">Email{!! $sortIcon('email') !!}</a></th>
-                        <th>Role</th>
-                        <th><a class="text-decoration-none" href="{{ $sortUrl('is_active') }}">Status{!! $sortIcon('is_active') !!}</a></th>
-                        <th><a class="text-decoration-none" href="{{ $sortUrl('created_at') }}">Created{!! $sortIcon('created_at') !!}</a></th>
-                        <th class="text-end">Actions</th>
+        <div class="overflow-x-auto -mx-8">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="bg-white/5 border-y border-white/10">
+                        <th class="px-8 py-4 font-bold text-slate-400 text-xs uppercase tracking-widest">User</th>
+                        <th class="px-8 py-4 font-bold text-slate-400 text-xs uppercase tracking-widest text-center">Role</th>
+                        <th class="px-8 py-4 font-bold text-slate-400 text-xs uppercase tracking-widest text-center">Status</th>
+                        <th class="px-8 py-4 font-bold text-slate-400 text-xs uppercase tracking-widest">Joined</th>
+                        <th class="px-8 py-4"></th>
                     </tr>
-                    </thead>
-
-                    <tbody>
-                    @forelse($users as $user)
-                        <tr>
-                            <td>
-                                @if($user->media)
-                                    <img
-                                        src="{{ $user->media->url() }}"
-                                        alt="{{ $user->name }}"
-                                        class="img-thumbnail"
-                                        style="width: 60px; height: 60px; object-fit: cover;"
-                                    >
-                                @else
-                                    -
-                                @endif
-                            </td>
-                            <td>{{ $user->id }}</td>
-                            <td>{{ $user->name }}</td>
-                            <td>{{ $user->email }}</td>
-                            <td>{{ $user->role?->name ?? '-' }}</td>
-
-                            <td>
-                                @if($user->is_active)
-                                    <span class="badge bg-success">active</span>
-                                @else
-                                    <span class="badge bg-secondary">inactive</span>
-                                @endif
-
-                                @if($user->deleted_at)
-                                    <span class="badge bg-danger ms-1">deleted</span>
-                                @endif
-                            </td>
-
-                            <td>{{ optional($user->created_at)->format('Y-m-d') }}</td>
-
-                            <td class="text-end">
-                                <div class="d-inline-flex gap-1">
-                                    @can('view', $user)
-                                        <a href="{{ route('backend.users.show', $user) }}" class="btn btn-sm btn-outline-primary">
-                                            Show
-                                        </a>
-                                    @endcan
-
-                                    @if(! $user->deleted_at)
-                                        @can('update', $user)
-                                            <a href="{{ route('backend.users.edit', $user) }}" class="btn btn-sm btn-outline-secondary">
-                                                Edit
-                                            </a>
-                                        @endcan
-
-                                        @can('delete', $user)
-                                            <form method="POST" action="{{ route('backend.users.destroy', $user) }}" class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-
-                                                <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                        onclick="return confirm('Are you sure you want to delete this user?')">
-                                                    Delete
-                                                </button>
-                                            </form>
-                                        @endcan
-                                    @else
-                                        @can('restore', $user)
-                                            <form method="POST" action="{{ route('backend.users.restore', $user->id) }}" class="d-inline">
-                                                @csrf
-                                                @method('PATCH')
-
-                                                <button type="submit" class="btn btn-sm btn-success"
-                                                        onclick="return confirm('Restore this user?')">
-                                                    Restore
-                                                </button>
-                                            </form>
-                                        @endcan
-
-                                        @can('forceDelete', $user)
-                                            <form method="POST" action="{{ route('backend.users.forceDelete', $user->id) }}" class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-
-                                                <button type="submit" class="btn btn-sm btn-danger"
-                                                        onclick="return confirm('Permanently delete this user? This cannot be undone.')">
-                                                    Force delete
-                                                </button>
-                                            </form>
-                                        @endcan
-                                    @endif
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    @forelse ($users as $user)
+                        <tr class="hover:bg-white/5 transition-all group">
+                            <td class="px-8 py-5">
+                                <div class="flex items-center gap-4">
+                                    <flux:avatar initials="{{ $user->initials() }}" size="sm" class="!bg-white/10 !border-white/10" />
+                                    <div>
+                                        <div class="text-sm font-bold text-white">{{ $user->name }}</div>
+                                        <div class="text-xs text-slate-500 font-medium">{{ $user->email }}</div>
+                                    </div>
                                 </div>
+                            </td>
+                            <td class="px-8 py-5 text-center">
+                                @foreach($user->roles as $role)
+                                    <flux:badge size="sm" class="!bg-white/10 !text-white !border-white/10">{{ $role->name }}</flux:badge>
+                                @endforeach
+                            </td>
+                            <td class="px-8 py-5 text-center">
+                                @if($user->is_active)
+                                    <flux:badge variant="success" size="sm" inset="top bottom">Active</flux:badge>
+                                @else
+                                    <flux:badge variant="danger" size="sm" inset="top bottom">Inactive</flux:badge>
+                                @endif
+                            </td>
+                            <td class="px-8 py-5">
+                                <div class="text-sm font-medium text-slate-300">{{ $user->created_at->format('M d, Y') }}</div>
+                                <div class="text-xs text-slate-500 font-medium">{{ $user->created_at->diffForHumans() }}</div>
+                            </td>
+                            <td class="px-8 py-5 text-right">
+                                <flux:dropdown>
+                                    <flux:button icon="ellipsis-horizontal" variant="ghost" size="sm" class="hover:!bg-white/10" />
+                                    <flux:menu class="!bg-slate-900/95 !backdrop-blur-xl !border-white/10">
+                                        @can('update', $user)
+                                            <flux:menu.item icon="pencil-square" :href="route('backend.users.edit', $user)">Edit</flux:menu.item>
+                                        @endcan
+                                        @can('delete', $user)
+                                            <flux:menu.separator class="!border-white/5" />
+                                            <form action="{{ route('backend.users.destroy', $user) }}" method="POST" onsubmit="return confirm('Delete this user?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <flux:menu.item as="button" type="submit" icon="trash" variant="danger">Delete</flux:menu.item>
+                                            </form>
+                                        @endcan
+                                    </flux:menu>
+                                </flux:dropdown>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center text-muted py-4">
-                                No users found. Try clearing filters.
-                            </td>
+                            <td colspan="5" class="px-8 py-16 text-center italic text-slate-500 font-medium">No users found.</td>
                         </tr>
                     @endforelse
-                    </tbody>
-                </table>
-            </div>
+                </tbody>
+            </table>
+        </div>
 
-            <div class="d-flex align-items-center justify-content-between mt-3">
-                <div class="small text-muted">
-                    Showing {{ $users->firstItem() ?? 0 }} to {{ $users->lastItem() ?? 0 }} of {{ $users->total() }}
-                </div>
-                <div>
-                    {{ $users->links() }}
-                </div>
+        @if ($users->hasPages())
+            <div class="px-8 py-6 border-t border-white/10 bg-white/5 mt-4 rounded-b-2xl">
+                {{ $users->links() }}
             </div>
-        </x-backend.card>
-
-    </x-backend.page-header>
+        @endif
+    </x-backend.card>
 
 </x-backend.shell>

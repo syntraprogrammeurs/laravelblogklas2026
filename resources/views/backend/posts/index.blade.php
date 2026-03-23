@@ -1,264 +1,178 @@
-<x-backend.shell title="Posts - SB Admin">
+<x-backend.shell title="Posts">
 
-    <x-slot:head>
-        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-    </x-slot:head>
+    <x-slot:actions>
+        @can('create', \App\Models\Post::class)
+            <flux:button icon="plus" variant="primary" class="rounded-xl" :href="route('backend.posts.create')">New Post</flux:button>
+        @endcan
+    </x-slot:actions>
 
-    <x-backend.page-header title="Posts">
-
-        <form method="GET" action="{{ route('backend.posts.index') }}" class="mb-4">
-            <div class="row g-2 align-items-end">
-
-                <div class="col-12 col-md-3">
-                    <label class="form-label mb-1">Search</label>
-                    <input
-                        type="text"
-                        name="q"
-                        value="{{ $filters['q'] }}"
-                        class="form-control"
-                        placeholder="Search title, slug, excerpt or body..."
-                    >
+    <x-backend.card>
+        {{-- Filters Section --}}
+        <form method="GET" action="{{ route('backend.posts.index') }}" class="mb-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 items-end">
+                <div class="lg:col-span-2">
+                    <flux:field>
+                        <flux:label class="!text-white/70 font-bold text-[10px] uppercase tracking-widest mb-2">Search</flux:label>
+                        <flux:input
+                            name="q"
+                            value="{{ $filters['q'] }}"
+                            placeholder="Search title, slug, excerpt or body..."
+                            clearable
+                            class="!bg-white/5 !border-white/10 focus:!border-white/20 !text-white rounded-xl h-11"
+                        />
+                    </flux:field>
                 </div>
 
-                <div class="col-12 col-md-2">
-                    <label class="form-label mb-1">Author</label>
-                    <select name="author" class="form-select">
-                        <option value="">All authors</option>
-                        @foreach($authors as $author)
-                            <option value="{{ $author->id }}" @selected((string) $filters['author'] === (string) $author->id)>
-                                {{ $author->name }}
-                            </option>
-                        @endforeach
-                    </select>
+                <div>
+                    <flux:field>
+                        <flux:label class="!text-white/70 font-bold text-[10px] uppercase tracking-widest mb-2">Author</flux:label>
+                        <flux:select name="author" class="!bg-white/5 !border-white/10 !text-white rounded-xl h-11">
+                            <flux:select.option value="">All authors</flux:select.option>
+                            @foreach($authors as $author)
+                                <flux:select.option value="{{ $author->id }}" @selected((string) $filters['author'] === (string) $author->id)>
+                                    {{ $author->name }}
+                                </flux:select.option>
+                            @endforeach
+                        </flux:select>
+                    </flux:field>
                 </div>
 
-                <div class="col-12 col-md-2">
-                    <label class="form-label mb-1">Category</label>
-                    <select name="category" class="form-select">
-                        <option value="">All categories</option>
-                        @foreach($categories as $category)
-                            <option value="{{ $category->id }}" @selected((string) $filters['category'] === (string) $category->id)>
-                                {{ $category->name }}
-                            </option>
-                        @endforeach
-                    </select>
+                <div>
+                    <flux:field>
+                        <flux:label class="!text-white/70 font-bold text-[10px] uppercase tracking-widest mb-2">Category</flux:label>
+                        <flux:select name="category" class="!bg-white/5 !border-white/10 !text-white rounded-xl h-11">
+                            <flux:select.option value="">All categories</flux:select.option>
+                            @foreach($categories as $category)
+                                <flux:select.option value="{{ $category->id }}" @selected((string) $filters['category'] === (string) $category->id)>
+                                    {{ $category->name }}
+                                </flux:select.option>
+                            @endforeach
+                        </flux:select>
+                    </flux:field>
                 </div>
 
-                <div class="col-12 col-md-2">
-                    <label class="form-label mb-1">Status</label>
-                    <select name="status" class="form-select">
-                        <option value="">All</option>
-                        <option value="published" @selected($filters['status'] === 'published')>Published</option>
-                        <option value="draft" @selected($filters['status'] === 'draft')>Draft</option>
-                    </select>
+                <div>
+                    <flux:field>
+                        <flux:label class="!text-white/70 font-bold text-[10px] uppercase tracking-widest mb-2">Status</flux:label>
+                        <flux:select name="status" class="!bg-white/5 !border-white/10 !text-white rounded-xl h-11">
+                            <flux:select.option value="">All</flux:select.option>
+                            <flux:select.option value="published" @selected($filters['status'] === 'published')>Published</flux:select.option>
+                            <flux:select.option value="draft" @selected($filters['status'] === 'draft')>Draft</flux:select.option>
+                        </flux:select>
+                    </flux:field>
                 </div>
 
-                <div class="col-12 col-md-1">
-                    <label class="form-label mb-1">Per page</label>
-                    <select name="per_page" class="form-select">
-                        @foreach($perPageAllowed as $n)
-                            <option value="{{ $n }}" @selected((int) $filters['per_page'] === (int) $n)>{{ $n }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="col-12 col-md-2">
-                    <label class="form-label mb-1">Deleted</label>
-                    <select name="trashed" class="form-select">
-                        <option value="">Active only</option>
-                        <option value="with" @selected($filters['trashed'] === 'with')>Active + deleted</option>
-                        <option value="only" @selected($filters['trashed'] === 'only')>Deleted only</option>
-                    </select>
-                </div>
-
-                {{-- Huidige sort state bewaren --}}
-                <input type="hidden" name="sort" value="{{ $filters['sort'] }}">
-                <input type="hidden" name="dir" value="{{ $filters['dir'] }}">
-
-                <div class="col-12 d-flex gap-2 mt-2">
-                    <button class="btn btn-primary" type="submit">Apply</button>
-
-                    <a class="btn btn-outline-secondary" href="{{ route('backend.posts.index') }}">
-                        Clear
-                    </a>
-
-                    @can('create', \App\Models\Post::class)
-                        <a href="{{ route('backend.posts.create') }}" class="btn btn-success ms-auto">
-                            <i class="fas fa-plus me-1"></i>
-                            New post
-                        </a>
-                    @endcan
+                <div class="flex gap-2">
+                    <flux:button type="submit" variant="filled" class="flex-1 rounded-xl h-11 !bg-white/10 hover:!bg-white/20 !border-white/10 !text-white transition-all">Apply</flux:button>
+                    <flux:button :href="route('backend.posts.index')" variant="ghost" icon="x-mark" class="rounded-xl h-11 hover:!bg-white/10 !text-slate-400" />
                 </div>
             </div>
         </form>
 
-        @php
-            $sortUrl = function (string $col) use ($filters) {
-                $newDir = ($filters['sort'] === $col && $filters['dir'] === 'asc') ? 'desc' : 'asc';
-
-                return route('backend.posts.index', [
-                    'q' => $filters['q'],
-                    'author' => $filters['author'],
-                    'category' => $filters['category'],
-                    'status' => $filters['status'],
-                    'trashed' => $filters['trashed'],
-                    'per_page' => $filters['per_page'],
-                    'sort' => $col,
-                    'dir' => $newDir,
-                ]);
-            };
-
-            $sortIcon = function (string $col) use ($filters) {
-                if ($filters['sort'] !== $col) return '';
-                return $filters['dir'] === 'asc' ? ' ▲' : ' ▼';
-            };
-        @endphp
-
-        <x-backend.card>
-            <div class="card-header">
-                <i class="fas fa-table me-1"></i>
-                Posts lijst
-                <span class="text-muted ms-2">({{ $posts->total() }} totaal)</span>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped mb-0">
-                    <thead>
-                    <tr>
-                        <th>Image</th>
-                        <th><a class="text-decoration-none" href="{{ $sortUrl('id') }}">ID{!! $sortIcon('id') !!}</a></th>
-                        <th><a class="text-decoration-none" href="{{ $sortUrl('title') }}">Title{!! $sortIcon('title') !!}</a></th>
-                        <th>Author</th>
-                        <th>Categories</th>
-                        <th><a class="text-decoration-none" href="{{ $sortUrl('is_published') }}">Status{!! $sortIcon('is_published') !!}</a></th>
-                        <th><a class="text-decoration-none" href="{{ $sortUrl('published_at') }}">Published{!! $sortIcon('published_at') !!}</a></th>
-                        <th><a class="text-decoration-none" href="{{ $sortUrl('created_at') }}">Created{!! $sortIcon('created_at') !!}</a></th>
-                        <th class="text-end">Actions</th>
+        {{-- Posts Table --}}
+        <div class="overflow-x-auto -mx-8">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="bg-white/5 border-y border-white/10">
+                        <th class="px-8 py-4 font-bold text-slate-400 text-xs uppercase tracking-wider">
+                            Title / Slug
+                        </th>
+                        <th class="px-8 py-4 font-bold text-slate-400 text-xs uppercase tracking-wider text-center">
+                            Categories
+                        </th>
+                        <th class="px-8 py-4 font-bold text-slate-400 text-xs uppercase tracking-wider">
+                            Author
+                        </th>
+                        <th class="px-8 py-4 font-bold text-slate-400 text-xs uppercase tracking-wider text-center">
+                            Status
+                        </th>
+                        <th class="px-8 py-4 font-bold text-slate-400 text-xs uppercase tracking-wider">
+                            Created
+                        </th>
+                        <th class="px-8 py-4"></th>
                     </tr>
-                    </thead>
-
-                    <tbody>
-                    @forelse($posts as $post)
-                        <tr>
-                            <td>
-
-                                @if($post->media)
-
-                                    <img
-                                        src="{{ $post->media->url() }}"
-                                        style="width:80px"
-                                        class="img-thumbnail">
-
-                                @endif
-
+                </thead>
+                <tbody class="divide-y divide-white/10">
+                    @forelse ($posts as $post)
+                        <tr class="hover:bg-white/5 transition-colors group">
+                            <td class="px-8 py-5">
+                                <flux:text size="sm" class="font-bold !text-white group-hover:text-white transition-colors">
+                                    {{ $post->title }}
+                                </flux:text>
+                                <flux:text size="xs" class="!text-slate-500 group-hover:text-slate-400 transition-colors">
+                                    {{ $post->slug }}
+                                </flux:text>
                             </td>
-
-                            <td>{{ $post->id }}</td>
-
-                            <td>
-                                {{ $post->title }}
-
-                                @if($post->deleted_at)
-                                    <span class="badge bg-danger ms-1">deleted</span>
-                                @endif
-                            </td>
-
-                            <td>{{ $post->user?->name ?? '-' }}</td>
-
-                            <td>
-                                @forelse($post->categories as $category)
-                                    <span class="badge bg-info text-dark me-1">{{ $category->name }}</span>
-                                @empty
-                                    -
-                                @endforelse
-                            </td>
-
-                            <td>
-                                @if($post->is_published)
-                                    <span class="badge bg-success">published</span>
-                                @else
-                                    <span class="badge bg-secondary">draft</span>
-                                @endif
-                            </td>
-
-                            <td>{{ optional($post->published_at)->format('Y-m-d H:i') ?? '-' }}</td>
-                            <td>{{ optional($post->created_at)->format('Y-m-d') }}</td>
-
-                            <td class="text-end">
-                                <div class="d-inline-flex gap-1">
-                                    @can('view', $post)
-                                        <a href="{{ route('backend.posts.show', $post) }}" class="btn btn-sm btn-outline-primary">
-                                            Show
-                                        </a>
-                                    @endcan
-
-                                    @if(! $post->deleted_at)
-                                        @can('update', $post)
-                                            <a href="{{ route('backend.posts.edit', $post) }}" class="btn btn-sm btn-outline-secondary">
-                                                Edit
-                                            </a>
-                                        @endcan
-
-                                        @can('delete', $post)
-                                            <form method="POST" action="{{ route('backend.posts.destroy', $post) }}" class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-
-                                                <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                        onclick="return confirm('Are you sure you want to delete this post?')">
-                                                    Delete
-                                                </button>
-                                            </form>
-                                        @endcan
-                                    @else
-                                        @can('restore', $post)
-                                            <form method="POST" action="{{ route('backend.posts.restore', $post->id) }}" class="d-inline">
-                                                @csrf
-                                                @method('PATCH')
-
-                                                <button type="submit" class="btn btn-sm btn-success"
-                                                        onclick="return confirm('Restore this post?')">
-                                                    Restore
-                                                </button>
-                                            </form>
-                                        @endcan
-
-                                        @can('forceDelete', $post)
-                                            <form method="POST" action="{{ route('backend.posts.forceDelete', $post->id) }}" class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-
-                                                <button type="submit" class="btn btn-sm btn-danger"
-                                                        onclick="return confirm('Permanently delete this post? This cannot be undone.')">
-                                                    Force delete
-                                                </button>
-                                            </form>
-                                        @endcan
-                                    @endif
+                            <td class="px-8 py-5">
+                                <div class="flex flex-wrap justify-center gap-1.5">
+                                    @foreach($post->categories as $cat)
+                                        <flux:badge size="sm" class="rounded-lg !bg-white/5 !border-white/10 !text-slate-300" inset="top bottom">{{ $cat->name }}</flux:badge>
+                                    @endforeach
                                 </div>
+                            </td>
+                            <td class="px-8 py-5">
+                                <div class="flex items-center gap-2.5">
+                                    <flux:avatar initials="{{ $post->user?->initials() }}" size="xs" class="border border-white/10" />
+                                    <flux:text size="sm" class="!text-slate-300">{{ $post->user->name ?? 'Unknown' }}</flux:text>
+                                </div>
+                            </td>
+                            <td class="px-8 py-5 text-center">
+                                @if ($post->status === 'published')
+                                    <flux:badge variant="success" size="sm" class="rounded-lg" inset="top bottom">Published</flux:badge>
+                                @else
+                                    <flux:badge variant="neutral" size="sm" class="rounded-lg !bg-white/5 !border-white/10 !text-slate-400" inset="top bottom">Draft</flux:badge>
+                                @endif
+                            </td>
+                            <td class="px-8 py-5">
+                                <flux:text size="sm" class="whitespace-nowrap font-medium !text-slate-300">
+                                    {{ $post->created_at->format('M d, Y') }}
+                                </flux:text>
+                                <flux:text size="xs" class="!text-slate-500">
+                                    {{ $post->created_at->diffForHumans() }}
+                                </flux:text>
+                            </td>
+                            <td class="px-8 py-5 text-right">
+                                <flux:dropdown>
+                                    <flux:button icon="ellipsis-horizontal" variant="ghost" size="sm" class="rounded-xl hover:!bg-white/10" />
+                                    <flux:menu class="!bg-slate-900/90 !backdrop-blur-xl !border-white/10 min-w-48">
+                                        @can('view', $post)
+                                            <flux:menu.item icon="eye" :href="route('backend.posts.show', $post)">View</flux:menu.item>
+                                        @endcan
+                                        @can('update', $post)
+                                            <flux:menu.item icon="pencil-square" :href="route('backend.posts.edit', $post)">Edit</flux:menu.item>
+                                        @endcan
+                                        <flux:menu.separator class="!border-white/5" />
+                                        @can('delete', $post)
+                                            <form action="{{ route('backend.posts.destroy', $post) }}" method="POST" onsubmit="return confirm('Are you sure?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <flux:menu.item as="button" type="submit" icon="trash" variant="danger">Delete</flux:menu.item>
+                                            </form>
+                                        @endcan
+                                    </flux:menu>
+                                </flux:dropdown>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center text-muted py-4">
-                                No posts found. Try clearing filters.
+                            <td colspan="6" class="px-8 py-16 text-center">
+                                <div class="flex flex-col items-center justify-center">
+                                    <flux:icon name="newspaper" size="xl" class="text-white/10 mb-4" />
+                                    <flux:text class="!text-slate-500 italic">No posts found matching your criteria.</flux:text>
+                                </div>
                             </td>
                         </tr>
                     @endforelse
-                    </tbody>
-                </table>
-            </div>
+                </tbody>
+            </table>
+        </div>
 
-            <div class="d-flex align-items-center justify-content-between mt-3">
-                <div class="small text-muted">
-                    Showing {{ $posts->firstItem() ?? 0 }} to {{ $posts->lastItem() ?? 0 }} of {{ $posts->total() }}
-                </div>
-                <div>
-                    {{ $posts->links() }}
-                </div>
+        @if ($posts->hasPages())
+            <div class="px-8 py-6 border-t border-white/10">
+                {{ $posts->links() }}
             </div>
-        </x-backend.card>
-
-    </x-backend.page-header>
+        @endif
+    </x-backend.card>
 
 </x-backend.shell>
+

@@ -7,120 +7,95 @@
      */
 @endphp
 
-<div class="row g-3">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
 
     {{-- ========================= TITLE ========================= --}}
-    <div class="col-12 col-md-6">
-        <label class="form-label">Title</label>
-        <input
-            type="text"
+    <flux:field>
+        <flux:label class="!text-white/70 font-bold text-[10px] uppercase tracking-widest mb-3">Title</flux:label>
+        <flux:input
             name="title"
             value="{{ old('title', $post?->title ?? '') }}"
-            class="form-control @error('title') is-invalid @enderror"
-        >
-
-        @error('title')
-        <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
+            class="!bg-white/5 !border-white/10 focus:!border-white/20 !text-white rounded-xl h-11"
+        />
+        <flux:error name="title" />
+    </flux:field>
 
     {{-- ========================= SLUG ========================= --}}
-    <div class="col-12 col-md-6">
-        <label class="form-label">Slug</label>
-        <input
-            type="text"
+    <flux:field>
+        <flux:label class="!text-white/70 font-bold text-[10px] uppercase tracking-widest mb-3">Slug</flux:label>
+        <flux:input
             name="slug"
             value="{{ old('slug', $post?->slug ?? '') }}"
-            class="form-control @error('slug') is-invalid @enderror"
-        >
-
-        @error('slug')
-        <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-
-        <div class="form-text">Leave blank to generate automatically from the title.</div>
-    </div>
+            placeholder="Auto-generated if left blank"
+            class="!bg-white/5 !border-white/10 focus:!border-white/20 !text-white rounded-xl h-11"
+        />
+        <flux:error name="slug" />
+    </flux:field>
 
     {{-- ========================= AUTHOR ========================= --}}
-    <div class="col-12 col-md-6">
-        <label class="form-label">Author</label>
-        <select name="user_id" class="form-select @error('user_id') is-invalid @enderror">
-            <option value="">No author</option>
-
+    <flux:field>
+        <flux:label class="!text-white/70 font-bold text-[10px] uppercase tracking-widest mb-3">Author</flux:label>
+        <flux:select name="user_id" class="!bg-white/5 !border-white/10 !text-white rounded-xl h-11">
+            <flux:select.option value="">No author</flux:select.option>
             @foreach($authors as $author)
-                <option value="{{ $author->id }}"
+                <flux:select.option value="{{ $author->id }}"
                     @selected((string) old('user_id', $post?->user_id ?? '') === (string) $author->id)>
                     {{ $author->name }}
-                </option>
+                </flux:select.option>
             @endforeach
-        </select>
+        </flux:select>
+        <flux:error name="user_id" />
+    </flux:field>
 
-        @error('user_id')
-        <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
+    <div class="grid grid-cols-2 gap-8">
+        {{-- ========================= STATUS ========================= --}}
+        <flux:field>
+            <flux:label class="!text-white/70 font-bold text-[10px] uppercase tracking-widest mb-3">Status</flux:label>
+            <flux:select name="is_published" class="!bg-white/5 !border-white/10 !text-white rounded-xl h-11">
+                <flux:select.option value="1" @selected((string) old('is_published', $post?->is_published ?? '0') === '1')>Published</flux:select.option>
+                <flux:select.option value="0" @selected((string) old('is_published', $post?->is_published ?? '0') === '0')>Draft</flux:select.option>
+            </flux:select>
+            <flux:error name="is_published" />
+        </flux:field>
 
-    {{-- ========================= STATUS ========================= --}}
-    <div class="col-12 col-md-3">
-        <label class="form-label">Status</label>
-        <select name="is_published" class="form-select @error('is_published') is-invalid @enderror">
-            <option value="1" @selected((string) old('is_published', $post?->is_published ?? '0') === '1')>Published</option>
-            <option value="0" @selected((string) old('is_published', $post?->is_published ?? '0') === '0')>Draft</option>
-        </select>
-
-        @error('is_published')
-        <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
-
-    {{-- ========================= PUBLISHED AT ========================= --}}
-    <div class="col-12 col-md-3">
-        <label class="form-label">Published at</label>
-        <input
-            type="datetime-local"
-            name="published_at"
-            value="{{ old('published_at', optional($post?->published_at)->format('Y-m-d\TH:i')) }}"
-            class="form-control @error('published_at') is-invalid @enderror"
-        >
-
-        @error('published_at')
-        <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-
-        <div class="form-text">Leave blank to use the current moment when publishing.</div>
+        {{-- ========================= PUBLISHED AT ========================= --}}
+        <flux:field>
+            <flux:label class="!text-white/70 font-bold text-[10px] uppercase tracking-widest mb-3">Published at</flux:label>
+            <flux:input
+                type="datetime-local"
+                name="published_at"
+                value="{{ old('published_at', optional($post?->published_at)->format('Y-m-d\TH:i')) }}"
+                class="!bg-white/5 !border-white/10 focus:!border-white/20 !text-white rounded-xl h-11"
+            />
+            <flux:error name="published_at" />
+        </flux:field>
     </div>
 
     {{-- ========================= EXCERPT ========================= --}}
-    <div class="col-12">
-        <label class="form-label">Excerpt</label>
-        <textarea
+    <flux:field class="md:col-span-2">
+        <flux:label class="!text-white/70 font-bold text-[10px] uppercase tracking-widest mb-3">Excerpt</flux:label>
+        <flux:textarea
             name="excerpt"
             rows="3"
-            class="form-control @error('excerpt') is-invalid @enderror"
-        >{{ old('excerpt', $post?->excerpt ?? '') }}</textarea>
-
-        @error('excerpt')
-        <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
+            class="!bg-white/5 !border-white/10 focus:!border-white/20 !text-white rounded-xl"
+        >{{ old('excerpt', $post?->excerpt ?? '') }}</flux:textarea>
+        <flux:error name="excerpt" />
+    </flux:field>
 
     {{-- ========================= BODY ========================= --}}
-    <div class="col-12">
-        <label class="form-label">Body</label>
-        <textarea
+    <flux:field class="md:col-span-2">
+        <flux:label class="!text-white/70 font-bold text-[10px] uppercase tracking-widest mb-3">Body</flux:label>
+        <flux:textarea
             name="body"
             rows="10"
-            class="form-control @error('body') is-invalid @enderror"
-        >{{ old('body', $post?->body ?? '') }}</textarea>
-
-        @error('body')
-        <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
+            class="!bg-white/5 !border-white/10 focus:!border-white/20 !text-white rounded-xl min-h-[300px]"
+        >{{ old('body', $post?->body ?? '') }}</flux:textarea>
+        <flux:error name="body" />
+    </flux:field>
 
     {{-- ========================= CATEGORIES ========================= --}}
-    <div class="col-12">
-        <label class="form-label d-block">Categories</label>
+    <flux:field class="md:col-span-2">
+        <flux:label class="!text-white/70 font-bold text-[10px] uppercase tracking-widest mb-3">Categories</flux:label>
 
         @php
             $selectedCategories = old(
@@ -131,82 +106,63 @@
             );
         @endphp
 
-        <div class="row g-2">
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             @foreach($categories as $category)
-                <div class="col-12 col-md-4">
-                    <div class="form-check">
-                        <input
-                            class="form-check-input @error('categories') is-invalid @enderror"
-                            type="checkbox"
-                            name="categories[]"
-                            value="{{ $category->id }}"
-                            id="category_{{ $category->id }}"
-                            @checked(in_array((string) $category->id, array_map('strval', $selectedCategories), true))
-                        >
-                        <label class="form-check-label" for="category_{{ $category->id }}">
-                            {{ $category->name }}
-                        </label>
-                    </div>
-                </div>
+                <flux:checkbox
+                    name="categories[]"
+                    value="{{ $category->id }}"
+                    label="{{ $category->name }}"
+                    id="category_{{ $category->id }}"
+                    @checked(in_array((string) $category->id, array_map('strval', $selectedCategories), true))
+                    class="!text-white"
+                />
             @endforeach
         </div>
 
-        @error('categories')
-        <div class="invalid-feedback d-block">{{ $message }}</div>
-        @enderror
+        <flux:error name="categories" />
+    </flux:field>
 
-        @error('categories.*')
-        <div class="invalid-feedback d-block">{{ $message }}</div>
-        @enderror
-    </div>
-    <div class="col-12">
+    <flux:field class="md:col-span-2">
+        <flux:label class="!text-white/70 font-bold text-[10px] uppercase tracking-widest mb-3">Featured image</flux:label>
 
-        <label class="form-label">Featured image</label>
-
-        <input
+        <flux:input
             type="file"
             name="image"
-            class="form-control @error('image') is-invalid @enderror"
             accept=".jpg,.jpeg,.png,.webp"
-        >
+            class="!bg-white/5 !border-white/10 focus:!border-white/20 !text-white rounded-xl"
+        />
+
+        <flux:text size="xs" class="mt-2 !text-slate-500">
+            Allowed formats: jpg, jpeg, png, webp (max 4MB)
+        </flux:text>
 
         @error('image')
-        <div class="invalid-feedback">{{ $message }}</div>
+        <flux:error>{{ $message }}</flux:error>
         @enderror
 
-        <div class="form-text">
-            Allowed formats: jpg, jpeg, png, webp (max 4MB)
-        </div>
-
         @if($post?->media)
-
-            <div class="mt-3">
-
-                <div class="small text-muted mb-2">
-                    Current image
+            <div class="mt-6 flex flex-col gap-2">
+                <flux:text size="xs" class="!text-slate-400 font-bold uppercase tracking-wider">Current image</flux:text>
+                <div class="p-2 bg-white/5 border border-white/10 rounded-2xl w-fit">
+                    <img
+                        src="{{ $post->media->url() }}"
+                        class="rounded-xl shadow-lg"
+                        style="max-width:200px;"
+                    >
                 </div>
-
-                <img
-                    src="{{ $post->media->url() }}"
-                    class="img-thumbnail"
-                    style="max-width:200px;"
-                >
-
             </div>
-
         @endif
-
-    </div>
+    </flux:field>
 
     {{-- ========================= ACTIONS ========================= --}}
-    <div class="col-12 d-flex gap-2 mt-2">
-        <button class="btn btn-primary" type="submit">
+    <div class="md:col-span-2 flex gap-4 mt-6">
+        <flux:button variant="primary" type="submit" class="rounded-xl px-8 h-12">
             {{ $submitLabel ?? 'Save' }}
-        </button>
+        </flux:button>
 
-        <a class="btn btn-outline-secondary" href="{{ route('backend.posts.index') }}">
+        <flux:button variant="ghost" :href="route('backend.posts.index')" class="rounded-xl px-8 h-12 hover:!bg-white/10 !text-slate-300">
             Cancel
-        </a>
+        </flux:button>
     </div>
 
 </div>
