@@ -26,6 +26,7 @@ Route::middleware(['auth', 'verified', 'active'])
     ->prefix('backend')
     ->name('backend.')
     ->group(function () {
+
         Route::resource('users', UserController::class);
         Route::patch('users/{id}/restore', [UserController::class, 'restore'])
             ->name('users.restore');
