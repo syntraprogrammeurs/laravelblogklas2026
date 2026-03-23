@@ -1,4 +1,4 @@
-<x-backend.shell title="Dashboard - SB Admin">
+<x-backend.shell title="Dashboard">
 
     <x-slot:head>
         <!-- Font Awesome: nodig voor iconen in cards/headers -->
@@ -21,7 +21,7 @@
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-chart-area me-1"></i>
-                        Area Chart Example
+                        Area chart
                     </div>
                     <div class="card-body">
                         <canvas id="myAreaChart" width="100%" height="40"></canvas>
@@ -33,7 +33,7 @@
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-chart-bar me-1"></i>
-                        Bar Chart Example
+                        Bar chart
                     </div>
                     <div class="card-body">
                         <canvas id="myBarChart" width="100%" height="40"></canvas>
@@ -46,7 +46,7 @@
         <x-backend.card>
             <div class="card-header">
                 <i class="fas fa-table me-1"></i>
-                DataTable Example
+                Demo table
             </div>
 
             <table id="datatablesSimple">

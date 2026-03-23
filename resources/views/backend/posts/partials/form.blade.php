@@ -188,7 +188,7 @@
 
                 <img
                     src="{{ $post->media->url() }}"
-                    class="img-thumbnail"
+                    class="img-thumbnail rounded-4"
                     style="max-width:200px;"
                 >
 

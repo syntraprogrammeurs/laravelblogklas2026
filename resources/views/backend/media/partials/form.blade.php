@@ -134,7 +134,7 @@
     @if(!empty($media) && $media->isImage())
         <div class="col-12">
             <label class="form-label d-block">Current image</label>
-            <img src="{{ $media->url() }}" alt="{{ $media->alt_text ?? $media->file_name }}" class="img-fluid rounded border" style="max-height: 320px;">
+            <img src="{{ $media->url() }}" alt="{{ $media->alt_text ?? $media->file_name }}" class="img-fluid rounded-4 border" style="max-height: 320px;">
         </div>
     @endif
 

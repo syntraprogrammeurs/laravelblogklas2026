@@ -1,4 +1,4 @@
-<x-backend.shell title="Roles - SB Admin">
+<x-backend.shell title="Roles">
 
     <x-slot:head>
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
@@ -80,7 +80,7 @@
         <x-backend.card>
             <div class="card-header">
                 <i class="fas fa-table me-1"></i>
-                Roles lijst
+                Roles overview
                 <span class="text-muted ms-2">({{ $roles->total() }} totaal)</span>
             </div>
 

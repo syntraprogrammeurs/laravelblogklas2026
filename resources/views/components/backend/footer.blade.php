@@ -1,11 +1,10 @@
-<footer class="py-4 bg-light mt-auto">
+<footer class="py-4 mt-auto">
     <div class="container-fluid px-4">
-        <div class="d-flex align-items-center justify-content-between small">
-            <div class="text-muted">Copyright &copy; Your Website {{ now()->year }}</div>
-            <div>
-                <a href="#">Privacy Policy</a>
-                &middot;
-                <a href="#">Terms &amp; Conditions</a>
+        <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2 small">
+            <div class="text-muted">{{ config('app.name', 'Laravel') }} backend, {{ now()->year }}</div>
+            <div class="d-flex align-items-center gap-3">
+                <a href="#" class="text-decoration-none">Privacy</a>
+                <a href="#" class="text-decoration-none">Terms</a>
             </div>
         </div>
     </div>

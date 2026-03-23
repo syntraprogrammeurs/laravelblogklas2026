@@ -1,11 +1,18 @@
 @props(['title'])
 
-<div class="container-fluid px-4">
-    <h1 class="mt-4">{{ $title }}</h1>
+<div class="backend-page-stack">
+    <div class="backend-page-header">
+        <div>
+            <p class="backend-page-meta mb-2">Admin workspace</p>
+            <h1 class="backend-page-title">{{ $title }}</h1>
+        </div>
 
-    <ol class="breadcrumb mb-4">
-        <li class="breadcrumb-item active">{{ $title }}</li>
-    </ol>
+        <div class="backend-page-meta">
+            {{ now()->format('d M Y') }}
+        </div>
+    </div>
 
-    {{ $slot }}
+    <div class="backend-page-content">
+        {{ $slot }}
+    </div>
 </div>

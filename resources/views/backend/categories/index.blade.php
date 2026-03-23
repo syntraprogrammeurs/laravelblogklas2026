@@ -1,4 +1,4 @@
-<x-backend.shell title="Categories - SB Admin">
+<x-backend.shell title="Categories">
 
     <x-slot:head>
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
@@ -80,7 +80,7 @@
         <x-backend.card>
             <div class="card-header">
                 <i class="fas fa-table me-1"></i>
-                Categories lijst
+                Categories overview
                 <span class="text-muted ms-2">({{ $categories->total() }} totaal)</span>
             </div>
 

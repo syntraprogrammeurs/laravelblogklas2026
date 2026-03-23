@@ -1,4 +1,4 @@
-<x-backend.shell title="Posts - SB Admin">
+<x-backend.shell title="Posts">
 
     <x-slot:head>
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
@@ -117,7 +117,7 @@
         <x-backend.card>
             <div class="card-header">
                 <i class="fas fa-table me-1"></i>
-                Posts lijst
+                Posts overview
                 <span class="text-muted ms-2">({{ $posts->total() }} totaal)</span>
             </div>
 
@@ -147,7 +147,7 @@
                                     <img
                                         src="{{ $post->media->url() }}"
                                         style="width:80px"
-                                        class="img-thumbnail">
+                                        class="img-thumbnail rounded-4">
 
                                 @endif
 

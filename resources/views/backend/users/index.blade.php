@@ -1,4 +1,4 @@
-<x-backend.shell title="Users - SB Admin">
+<x-backend.shell title="Users">
 
     <x-slot:head>
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
@@ -113,7 +113,7 @@
         <x-backend.card>
             <div class="card-header">
                 <i class="fas fa-table me-1"></i>
-                Users lijst
+                Users overview
                 <span class="text-muted ms-2">({{ $users->total() }} totaal)</span>
             </div>
 
@@ -140,7 +140,7 @@
                                     <img
                                         src="{{ $user->media->url() }}"
                                         alt="{{ $user->name }}"
-                                        class="img-thumbnail"
+                                        class="img-thumbnail rounded-4"
                                         style="width: 60px; height: 60px; object-fit: cover;"
                                     >
                                 @else

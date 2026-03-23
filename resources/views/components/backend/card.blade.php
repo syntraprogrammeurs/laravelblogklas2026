@@ -9,7 +9,5 @@
         </div>
     @endif
 
-    <div class="card-body">
-        {{ $slot }}
-    </div>
+    {{ $slot }}
 </div>

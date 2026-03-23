@@ -1,13 +1,13 @@
-<nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
-    <div class="sb-sidenav-menu">
+<nav class="sb-sidenav accordion" id="sidenavAccordion">
+    <div class="sb-sidenav-menu py-3">
         <div class="nav">
-            <div class="sb-sidenav-menu-heading">Core</div>
+            <div class="sb-sidenav-menu-heading">Overview</div>
 
             @can('view-backend-dashboard')
                 <a class="nav-link {{ request()->routeIs('backend.dashboard') ? 'active' : '' }}"
                    href="{{ route('backend.dashboard') }}">
-                    <div class="sb-nav-link-icon">
-                        <i class="fas fa-tachometer-alt"></i>
+                    <div class="sb-nav-link-icon me-2">
+                        <i class="fas fa-chart-pie"></i>
                     </div>
                     Dashboard
                 </a>
@@ -18,7 +18,7 @@
             @can('viewAny', \App\Models\Post::class)
                 <a class="nav-link {{ request()->routeIs('backend.posts.*') ? 'active' : '' }}"
                    href="{{ route('backend.posts.index') }}">
-                    <div class="sb-nav-link-icon">
+                    <div class="sb-nav-link-icon me-2">
                         <i class="fas fa-thumbtack"></i>
                     </div>
                     Posts
@@ -28,8 +28,8 @@
             @can('viewAny', \App\Models\Post::class)
                 <a class="nav-link {{ request()->routeIs('backend.categories.*') ? 'active' : '' }}"
                    href="{{ route('backend.categories.index') }}">
-                    <div class="sb-nav-link-icon">
-                        <i class="fas fa-folder"></i>
+                    <div class="sb-nav-link-icon me-2">
+                        <i class="fas fa-folder-tree"></i>
                     </div>
                     Categories
                 </a>
@@ -38,7 +38,7 @@
             @can('viewAny', \App\Models\Media::class)
                 <a class="nav-link {{ request()->routeIs('backend.media.*') ? 'active' : '' }}"
                    href="{{ route('backend.media.index') }}">
-                    <div class="sb-nav-link-icon">
+                    <div class="sb-nav-link-icon me-2">
                         <i class="fas fa-image"></i>
                     </div>
                     Media
@@ -50,7 +50,7 @@
             @can('viewAny', \App\Models\User::class)
                 <a class="nav-link {{ request()->routeIs('backend.users.*') ? 'active' : '' }}"
                    href="{{ route('backend.users.index') }}">
-                    <div class="sb-nav-link-icon">
+                    <div class="sb-nav-link-icon me-2">
                         <i class="fas fa-users"></i>
                     </div>
                     Users
@@ -60,26 +60,26 @@
             @can('viewAny', \App\Models\Role::class)
                 <a class="nav-link {{ request()->routeIs('backend.roles.*') ? 'active' : '' }}"
                    href="{{ route('backend.roles.index') }}">
-                    <div class="sb-nav-link-icon">
+                    <div class="sb-nav-link-icon me-2">
                         <i class="fas fa-user-shield"></i>
                     </div>
                     Roles
                 </a>
             @endcan
 
-            <div class="sb-sidenav-menu-heading">Website</div>
+            <div class="sb-sidenav-menu-heading">Go to</div>
 
             <a class="nav-link" href="{{ route('home') }}">
-                <div class="sb-nav-link-icon">
-                    <i class="fas fa-globe"></i>
+                <div class="sb-nav-link-icon me-2">
+                    <i class="fas fa-arrow-up-right-from-square"></i>
                 </div>
-                Naar website
+                Website
             </a>
         </div>
     </div>
 
     <div class="sb-sidenav-footer">
-        <div class="small">Logged in as:</div>
-        {{ auth()->user()->name ?? 'Start Bootstrap' }}
+        <div class="small">Signed in as</div>
+        <div class="fw-semibold">{{ auth()->user()->name ?? 'User' }}</div>
     </div>
 </nav>

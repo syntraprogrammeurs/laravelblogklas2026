@@ -27,7 +27,7 @@
             <div class="card-body">
                 @if($media->isImage())
                     <div class="mb-4">
-                        <img src="{{ $media->url() }}" alt="{{ $media->alt_text ?? $media->file_name }}" class="img-fluid rounded border" style="max-height: 420px;">
+                        <img src="{{ $media->url() }}" alt="{{ $media->alt_text ?? $media->file_name }}" class="img-fluid rounded-4 border" style="max-height: 420px;">
                     </div>
                 @endif
 

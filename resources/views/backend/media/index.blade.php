@@ -1,4 +1,4 @@
-<x-backend.shell title="Media - SB Admin">
+<x-backend.shell title="Media">
 
     <x-slot:head>
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
@@ -101,7 +101,7 @@
         <x-backend.card>
             <div class="card-header">
                 <i class="fas fa-table me-1"></i>
-                Media lijst
+                Media overview
                 <span class="text-muted ms-2">({{ $media->total() }} totaal)</span>
             </div>
 
@@ -127,7 +127,7 @@
 
                             <td style="width: 90px;">
                                 @if($item->isImage())
-                                    <img src="{{ $item->url() }}" alt="{{ $item->alt_text ?? $item->file_name }}" class="img-thumbnail" style="max-height: 60px;">
+                                    <img src="{{ $item->url() }}" alt="{{ $item->alt_text ?? $item->file_name }}" class="img-thumbnail rounded-4" style="max-height: 60px;">
                                 @else
                                     -
                                 @endif
