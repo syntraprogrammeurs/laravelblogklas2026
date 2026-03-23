@@ -8,7 +8,7 @@
              style="background-image: url('{{ $post->media ? $post->media->url() : asset('frontend/gazette/img/blog-img/1.jpg') }}');">
             <div class="single-blog-post-content">
                 <div class="tags">
-                    @foreach($post->categories->take(2) as $category)
+                    @foreach($post->categories->take(4) as $category)
                         <a href="#">{{ $category->name }}</a>
                     @endforeach
                 </div>
